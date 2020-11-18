@@ -189,12 +189,12 @@ function contactreferencetoken_civicrm_tokenValues(&$values, $cids, $job = null,
       return;
     }
 
-    drupal_set_message(print_r('here one', TRUE));
+    // drupal_set_message(print_r('here one', TRUE));
 
     foreach ($cids as $cid) {
       // get team (employer) id
       $result = civicrm_api3('Contact', 'getsingle', [
-        'return' => ["custom_49"],
+        'return' => ["custom_138"],
         'id' => 2,
       ]);
 
@@ -206,22 +206,22 @@ function contactreferencetoken_civicrm_tokenValues(&$values, $cids, $job = null,
       //  "is_error": 0
       // }
 
-      drupal_set_message(print_r($result['custom_49'], TRUE)); // 188 -> which is Justin's contact ID - ok this looks good.
+      // drupal_set_message(print_r($result['custom_138'], TRUE)); // 188 -> which is Justin's contact ID - ok this looks good.
 
-      if(!$result['is_error'] && isset($result['custom_49']) && strlen($result['custom_49'])){
+      if(!$result['is_error'] && isset($result['custom_138']) && strlen($result['custom_138'])){
 
-        drupal_set_message(print_r('here two', TRUE));
+        // drupal_set_message(print_r('here two', TRUE));
 
         $resultEmail = civicrm_api3('Email', 'getsingle', [
           'return' => ["email"],
-          'contact_id' => $result['custom_49'],
+          'contact_id' => $result['custom_138'],
           'is_primary' => 1,
         ]);
  	
-        drupal_set_message(print_r($resultEmail, TRUE));     
-        drupal_set_message(print_r($resultEmail['email'], TRUE));
+        // drupal_set_message(print_r($resultEmail, TRUE));     
+        // drupal_set_message(print_r($resultEmail['email'], TRUE));
 
-        drupal_set_message(print_r('here three - xyz', TRUE));
+        // drupal_set_message(print_r('here three - xyz', TRUE));
 
         if(!$resultEmail['is_error'] && isset($resultEmail['email'])) {
           $values[$cid]['contactreference.email'] = $resultEmail['email'];
