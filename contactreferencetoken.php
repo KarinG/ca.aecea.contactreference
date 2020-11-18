@@ -181,6 +181,7 @@ function contactreferencetoken_civicrm_tokens( &$tokens ) {
 
 
 function contactreferencetoken_civicrm_tokenValues(&$values, $cids, $job = null, $tokens = [], $context = null) {
+
   $group = 'contactreference';
   if(isset($tokens[$group])) {
     $token = 'email';
@@ -188,10 +189,12 @@ function contactreferencetoken_civicrm_tokenValues(&$values, $cids, $job = null,
       return;
     }
 
+    drupal_set_message(print_r('here one', TRUE));
+
     foreach ($cids as $cid) {
       // get team (employer) id
       $result = civicrm_api3('Contact', 'getsingle', [
-        'return' => ["custom_38"],
+        'return' => ["custom_49"],
         'id' => 2,
       ]);
 
@@ -203,17 +206,23 @@ function contactreferencetoken_civicrm_tokenValues(&$values, $cids, $job = null,
       //  "is_error": 0
       // }
 
-      // if there is a team (employer) id, get team number for the team (employer)
-      if(!$result['is_error'] && isset($result['custom_38']) && strlen($result['custom_38'])){
+      drupal_set_message(print_r($result['custom_49'], TRUE)); // 188 -> which is Justin's contact ID - ok this looks good.
 
-        $resultEmail = civicrm_api3('Email', 'get', [
-          'sequential' => 1,
+      if(!$result['is_error'] && isset($result['custom_49']) && strlen($result['custom_49'])){
+
+        drupal_set_message(print_r('here two', TRUE));
+
+        $resultEmail = civicrm_api3('Email', 'getsingle', [
           'return' => ["email"],
-          'contact_id' => $result['custom_38'],
+          'contact_id' => $result['custom_49'],
           'is_primary' => 1,
         ]);
+ 	
+        drupal_set_message(print_r($resultEmail, TRUE));     
+        drupal_set_message(print_r($resultEmail['email'], TRUE));
 
-        // if there is a team number, display it as the token
+        drupal_set_message(print_r('here three - xyz', TRUE));
+
         if(!$resultEmail['is_error'] && isset($resultEmail['email'])) {
           $values[$cid]['contactreference.email'] = $resultEmail['email'];
         }
@@ -242,55 +251,3 @@ function customtokens_isTokenRequested($tokens, $group, $token) {
   }
   return FALSE;
 }
-
-  // Example from Lobo: https://civicrm.org/node/480
-  // if ( is_array( $contactIDs ) ) {
-  //   $contactIDString = implode( ',', array_values( $contactIDs ) );
-  //   $single = false;
-  //  } else {
-  //    $contactIDString = "( $contactIDs )";
-  //    $single = true;
-  //  }
-
-  // require_once 'CRM/Core/BAO/CustomField.php';
-  // $groupTitle = 'Contact Reference';
-  // $fieldLabel = 'Contact Reference';
-  // $customFieldID = CRM_Core_BAO_CustomField::getCustomFieldID( $fieldLabel, $groupTitle );
-
-  // require_once 'CRM/Core/BAO/CustomValueTable.php';
-
-  // $custom_id = 'custom_' . $customFieldID;
-  // $params = array('entityID' => $contactID, $custom_id => 1);
-  // $values = CRM_Core_BAO_CustomValueTable::getValues($params);
-  // $contactreference[] = $values[$custom_id];
-
-  // $email = 'karin@astridge.ca';
-
-  // $value['contactreference.email'] = $email;
-
-  // $home_email='';
-  // $params = array('contact_id' => $dao->contact_id, 'location_type_id' => 1, 'version' => 3);
-  // $result_homeemail = civicrm_api( 'email','get', $params );
-  // if ( $result_homeemail['is_error'] == 0) {
-  //   if (isset($result_homeemail['id'])) {
-  //     $id = $result_homeemail['id'];
-  //     $home_email= $result_homeemail['values'][$id]['email'];
-  //  }
-  // }
-  // $value['contact.homeemail'] = $home_email;
-
-  // KG
-  // ran into issue with activity API - so my own MYSQL query
-  // $contact_id = $dao->contact_id;
-  // $sql = "SELECT subject FROM civicrm_activity act
-  // INNER JOIN civicrm_activity_contact con ON act.id = con.activity_id
-  // WHERE contact_id = $contact_id
-  // AND (subject IN ('ORTHO','FPP','RFP','RPP'))";
-  //
-  //  $dao2 = CRM_Core_DAO::executeQuery($sql);
-  //  while ( $dao2->fetch( ) ) {
-  //    $result_activity_skills[] = $dao2->subject;
-  //  }
-  //
-  //  $value['contact.activityskills'] =  implode(', ', $result_activity_skills);
-
