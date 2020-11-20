@@ -192,10 +192,9 @@ function contactreferencetoken_civicrm_tokenValues(&$values, $cids, $job = null,
     // drupal_set_message(print_r('here one', TRUE));
 
     foreach ($cids as $cid) {
-      // get team (employer) id
       $result = civicrm_api3('Contact', 'getsingle', [
         'return' => ["custom_138"],
-        'id' => 2,
+        'id' => $cid,
       ]);
 
       // {
